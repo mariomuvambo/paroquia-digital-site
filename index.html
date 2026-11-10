@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="pt" translate="no">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paróquia Digital — a gestão da paróquia no telemóvel</title>
+<meta name="description" content="Membros, sacramentos, certidões, eventos, grupos e finanças da paróquia, numa app feita em Moçambique.">
+<meta name="google" content="notranslate">
+<meta property="og:title" content="Paróquia Digital">
+<meta property="og:description" content="A gestão da paróquia no telemóvel: membros, sacramentos, certidões, eventos e finanças.">
+<meta property="og:image" content="images/dashboard.jpg">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234A0E1C'/%3E%3Cpath d='M29 12h6v14h12v6H35v20h-6V32H17v-6h12z' fill='%23C9A24A'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --wine: #4A0E1C;
+    --night: #1E1030;
+    --gold: #C9A24A;
+    --gold-dark: #8C6A22;
+    --ivory: #FAF6EE;
+    --ink: #2B1B17;
+    --muted: #6B5B4D;
+    --line: #E6DCCB;
+    --display: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+    --text: "Source Sans 3", "Segoe UI", Roboto, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--ivory);
+    color: var(--ink);
+    font-family: var(--text);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; border-radius: 4px; }
+  .wrap { width: min(1120px, 100% - 48px); margin-inline: auto; }
+
+  /* ---------- Arco: a janela da igreja, como no logótipo da app ----------
+     A curva do arco fica em cima, com a cruz; a captura entra inteira por baixo. */
+  .arch {
+    position: relative;
+    border-radius: 999px 999px 18px 18px;
+    padding: 26% 12px 12px;
+    border: 2px solid var(--gold);
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(201,162,74,0.16), transparent 60%),
+      rgba(201, 162, 74, 0.07);
+  }
+  .arch::before {
+    /* cruz dourada no centro da curva */
+    content: "";
+    position: absolute;
+    left: 50%; top: 9%;
+    width: 22px; height: 34px;
+    transform: translateX(-50%);
+    background:
+      linear-gradient(var(--gold), var(--gold)) center / 6px 100% no-repeat,
+      linear-gradient(var(--gold), var(--gold)) 50% 32% / 100% 6px no-repeat;
+  }
+  .arch img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    border: 1px solid rgba(201, 162, 74, 0.45);
+    background: var(--ivory);
+    box-shadow: 0 10px 30px rgba(30, 16, 48, 0.16);
+  }
+
+  /* ---------- Topo ---------- */
+  .hero {
+    background: linear-gradient(160deg, var(--wine) 0%, #2E0F2A 55%, var(--night) 100%);
+    color: var(--ivory);
+    padding: 28px 0 0;
+    overflow: hidden;
+  }
+  .nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .brand { white-space: nowrap; display: flex; align-items: center; gap: 10px; text-decoration: none; font-family: var(--display); font-size: 1.5rem; font-weight: 700; }
+  .brand svg { flex: none; }
+  .nav a.contact-link {
+    text-decoration: none; font-weight: 600; font-size: 0.95rem;
+    padding: 8px 16px; border: 1px solid rgba(201,162,74,0.6); border-radius: 999px;
+  }
+  .nav a.contact-link:hover { background: rgba(201,162,74,0.14); }
+  .nav .short { display: none; }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 56px;
+    align-items: end;
+    padding-top: 64px;
+  }
+  .hero h1 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(2.6rem, 5.4vw, 4.4rem);
+    line-height: 1.02;
+    margin: 0 0 22px;
+    letter-spacing: -0.01em;
+  }
+  .hero p.lead { font-size: 1.2rem; color: rgba(250,246,238,0.82); max-width: 34ch; margin: 0 0 32px; }
+  .hero .actions { display: flex; flex-wrap: wrap; gap: 14px; padding-bottom: 72px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    text-decoration: none; font-weight: 700; font-size: 1rem;
+    padding: 14px 26px; border-radius: 14px;
+  }
+  .btn-gold { background: var(--gold); color: var(--night); box-shadow: 0 3px 0 var(--gold-dark); }
+  .btn-gold:hover { background: #D5B15E; }
+  .btn-ghost { color: var(--ivory); border: 1.5px solid rgba(250,246,238,0.35); }
+  .btn-ghost:hover { border-color: var(--gold); }
+  .hero .arch { max-width: 430px; justify-self: end; margin-bottom: -2px; border-bottom: none; border-radius: 999px 999px 0 0; padding-bottom: 0; }
+  .hero .arch img { border-radius: 10px 10px 0 0; border-bottom: none; }
+
+  /* ---------- Faixa de factos ---------- */
+  .facts { border-bottom: 1px solid var(--line); background: #FFFDF8; }
+  .facts ul {
+    list-style: none; margin: 0; padding: 22px 0;
+    display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 32px;
+    color: var(--muted); font-size: 0.98rem;
+  }
+  .facts strong { color: var(--ink); }
+
+  /* ---------- Funcionalidades ---------- */
+  section { padding: 96px 0; }
+  .intro { max-width: 640px; margin-bottom: 72px; }
+  h2 {
+    font-family: var(--display); font-weight: 700; color: var(--wine);
+    font-size: clamp(2rem, 3.6vw, 2.9rem); line-height: 1.08; margin: 0 0 16px;
+  }
+  .intro p { color: var(--muted); font-size: 1.15rem; margin: 0; }
+
+  .feature {
+    display: grid; grid-template-columns: 1fr 380px; gap: 72px; align-items: center;
+    margin-bottom: 96px;
+  }
+  .feature:nth-of-type(even) { grid-template-columns: 380px 1fr; }
+  .feature:nth-of-type(even) .feature-text { order: 2; }
+  .feature:last-of-type { margin-bottom: 0; }
+  .feature h3 { font-family: var(--display); font-size: 2rem; line-height: 1.1; margin: 0 0 14px; color: var(--ink); }
+  .feature p { margin: 0 0 14px; max-width: 52ch; }
+  .feature ul { margin: 0; padding-left: 1.1em; max-width: 52ch; }
+  .feature li { margin: 6px 0; }
+  .feature li::marker { color: var(--gold-dark); }
+
+  /* ---------- Galeria do resto do sistema ---------- */
+  .more { background: var(--night); color: var(--ivory); }
+  .more h2 { color: var(--ivory); }
+  .more .intro p { color: rgba(250,246,238,0.75); }
+  .gallery { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; }
+  .gallery figure { margin: 0; }
+  .gallery figcaption { margin-top: 12px; font-weight: 600; text-align: center; color: rgba(250,246,238,0.88); }
+
+  /* ---------- Confiança ---------- */
+  .trust-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
+  .trust-grid h3 { font-size: 1.15rem; margin: 0 0 8px; color: var(--wine); }
+  .trust-grid p { margin: 0; color: var(--muted); }
+
+  /* ---------- Contacto ---------- */
+  .contact { background: linear-gradient(160deg, var(--wine), var(--night)); color: var(--ivory); text-align: center; }
+  .contact h2 { color: var(--ivory); margin-inline: auto; max-width: 18ch; }
+  .contact p { color: rgba(250,246,238,0.8); max-width: 52ch; margin: 0 auto 32px; font-size: 1.15rem; }
+  .contact .actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
+
+  footer { padding: 32px 0; font-size: 0.92rem; color: var(--muted); }
+  footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; }
+  footer a { color: var(--wine); }
+
+  /* ---------- Ecrãs pequenos ---------- */
+  @media (max-width: 900px) {
+    .hero-grid, .feature, .feature:nth-of-type(even) { grid-template-columns: 1fr; gap: 40px; }
+    .feature:nth-of-type(even) .feature-text { order: 0; }
+    .hero .arch { justify-self: center; max-width: 340px; }
+    .hero .actions { padding-bottom: 8px; }
+    .feature .arch { max-width: 340px; margin-inline: auto; }
+    .gallery { grid-template-columns: repeat(2, 1fr); }
+    .trust-grid { grid-template-columns: 1fr; gap: 28px; }
+    section { padding: 72px 0; }
+  }
+  @media (max-width: 480px) {
+    .wrap { width: calc(100% - 32px); }
+    .nav .long { display: none; }
+    .nav .short { display: inline; }
+    .gallery { gap: 18px; }
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <nav class="nav" aria-label="Principal">
+      <a class="brand" href="#">
+        <svg width="34" height="40" viewBox="0 0 34 40" aria-hidden="true">
+          <path d="M2 38V17a15 15 0 0 1 30 0v21z" fill="none" stroke="#C9A24A" stroke-width="2"/>
+          <path d="M15 10h4v7h7v4h-7v12h-4V21H8v-4h7z" fill="#C9A24A"/>
+        </svg>
+        Paróquia Digital
+      </a>
+      <a class="contact-link" href="#contacto"><span class="long">Pedir uma demonstração</span><span class="short">Contacto</span></a>
+    </nav>
+
+    <div class="hero-grid">
+      <div>
+        <h1>A gestão da paróquia, no telemóvel de quem a serve.</h1>
+        <p class="lead">Membros, sacramentos, certidões, eventos, grupos e finanças, organizados numa só app. Feita em Moçambique, para as paróquias.</p>
+        <div class="actions">
+          <a class="btn btn-gold" href="#contacto">Pedir uma demonstração</a>
+          <a class="btn btn-ghost" href="#funcionalidades">Ver como funciona</a>
+        </div>
+      </div>
+      <div class="arch">
+        <img src="images/dashboard.jpg" alt="Painel inicial da app, com o saldo da paróquia, o número de membros, sacramentos, eventos e grupos, e as metas financeiras">
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="facts">
+  <div class="wrap">
+    <ul>
+      <li><strong>Seis papéis</strong>, do padre ao fiel, cada um vê o que lhe compete</li>
+      <li>Certidões com <strong>verificação por QR</strong></li>
+      <li>Contribuições por <strong>M-Pesa, e-Mola</strong>, numerário e banco</li>
+      <li><strong>Cópia de segurança</strong> todas as noites</li>
+    </ul>
+  </div>
+</div>
+
+<main>
+  <section id="funcionalidades">
+    <div class="wrap">
+      <div class="intro">
+        <h2>O livro da paróquia, sem perder o rigor do papel.</h2>
+        <p>O que hoje está em cadernos, folhas soltas e mensagens de WhatsApp passa a estar num só sítio, seguro e fácil de consultar.</p>
+      </div>
+
+      <article class="feature">
+        <div class="feature-text">
+          <h3>A comunidade inteira, em ordem</h3>
+          <p>Cada fiel tem a sua ficha, com um código próprio, os contactos, a família e o percurso na paróquia. A secretaria encontra qualquer pessoa em segundos, pelo nome, pelo código ou pelo telefone.</p>
+          <ul>
+            <li>Fichas de membros com ativos e inativos</li>
+            <li>Ligar ou abrir o WhatsApp a partir da ficha</li>
+            <li>Convite para a app com um código de 6 números</li>
+          </ul>
+        </div>
+        <div class="arch"><img src="images/members.jpg" alt="Lista de membros da paróquia, com o código e o telefone de cada um" loading="lazy"></div>
+      </article>
+
+      <article class="feature">
+        <div class="feature-text">
+          <h3>Sacramentos registados como no livro</h3>
+          <p>Batismos, primeiras comunhões, crismas e matrimónios ficam registados com o livro, a folha e o número, o celebrante e a data. O sistema não deixa registar duas vezes um sacramento que só se recebe uma vez.</p>
+          <ul>
+            <li>Contadores por sacramento e por ano</li>
+            <li>Certidões em PDF, ligadas ao registo</li>
+            <li>Um código QR em cada certidão, que qualquer pessoa pode verificar</li>
+          </ul>
+        </div>
+        <div class="arch"><img src="images/sacraments.jpg" alt="Registo dos sacramentos, com o tipo, o nome, a data, o celebrante, o livro, a folha e o número" loading="lazy"></div>
+      </article>
+
+      <article class="feature">
+        <div class="feature-text">
+          <h3>A agenda que a comunidade recebe</h3>
+          <p>Cada evento tem o seu cartaz, o local e o horário. Quando a secretaria o cria, a comunidade recebe o aviso no telemóvel. Os fiéis inscrevem-se com um toque, e no dia marca-se quem esteve presente.</p>
+          <ul>
+            <li>Cartaz ou fotografia em cada evento</li>
+            <li>Inscrições e presenças, com a taxa de participação</li>
+            <li>Grupos e movimentos, com os seus líderes</li>
+          </ul>
+        </div>
+        <div class="arch"><img src="images/events.jpg" alt="Agenda de eventos da paróquia, com os cartazes de cada evento" loading="lazy"></div>
+      </article>
+
+      <article class="feature">
+        <div class="feature-text">
+          <h3>Contas claras, para prestar contas</h3>
+          <p>O dízimo, o ofertório e as campanhas ficam registados com recibo. As despesas têm categoria, fornecedor e fatura. No fim do mês, o relatório sai em PDF, pronto para o conselho paroquial.</p>
+          <ul>
+            <li>Recibo numerado em cada contribuição</li>
+            <li>Cada fiel vê as suas contribuições, e só as suas</li>
+            <li>Metas de angariação, com o progresso à vista</li>
+          </ul>
+        </div>
+        <div class="arch"><img src="images/reports.jpg" alt="Relatório financeiro do mês, com as receitas, as despesas, o saldo e o gráfico dos últimos seis meses" loading="lazy"></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="more" aria-labelledby="mais-titulo">
+    <div class="wrap">
+      <div class="intro">
+        <h2 id="mais-titulo">E o resto do dia a dia da paróquia</h2>
+        <p>Pedidos de acesso aprovados pela secretaria, papéis para cada pessoa da equipa, contribuições do mês e metas da comunidade.</p>
+      </div>
+      <div class="gallery">
+        <figure><div class="arch"><img src="images/contributions.jpg" alt="Contribuições do mês, com o recibo, o método de pagamento e o valor" loading="lazy"></div><figcaption>Contribuições</figcaption></figure>
+        <figure><div class="arch"><img src="images/goals.jpg" alt="Metas de angariação com barras de progresso" loading="lazy"></div><figcaption>Metas da comunidade</figcaption></figure>
+        <figure><div class="arch"><img src="images/requests.jpg" alt="Pedidos de acesso à app, com os botões para aprovar ou recusar" loading="lazy"></div><figcaption>Pedidos de acesso</figcaption></figure>
+        <figure><div class="arch"><img src="images/users.jpg" alt="Lista de utilizadores com o papel de cada um" loading="lazy"></div><figcaption>Papéis da equipa</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="confianca-titulo">
+    <div class="wrap">
+      <div class="intro">
+        <h2 id="confianca-titulo">Dados sensíveis, tratados com cuidado</h2>
+        <p>Os registos de uma paróquia dizem respeito à vida das pessoas. O sistema foi desenhado para os proteger.</p>
+      </div>
+      <div class="trust-grid">
+        <div>
+          <h3>Cada pessoa vê o que lhe compete</h3>
+          <p>O tesoureiro vê as finanças; a secretaria vê os membros e os sacramentos; o fiel vê só os seus dados. As regras são verificadas no servidor, em cada pedido.</p>
+        </div>
+        <div>
+          <h3>Ninguém entra sem aprovação</h3>
+          <p>Quem pede acesso fica à espera até a secretaria aprovar e escolher o papel. As senhas nunca são guardadas em texto, e a ligação é sempre cifrada.</p>
+        </div>
+        <div>
+          <h3>Uma cópia todas as noites</h3>
+          <p>A base de dados é copiada automaticamente, cifrada e guardada durante 30 dias. A recuperação é testada.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="contact" id="contacto" aria-labelledby="contacto-titulo">
+    <div class="wrap">
+      <h2 id="contacto-titulo">Quer ver a Paróquia Digital na sua paróquia?</h2>
+      <p>Mostro o sistema com uma paróquia de demonstração, ao vivo ou por videochamada, e conversamos sobre o que a sua comunidade precisa.</p>
+      <div class="actions">
+        <a class="btn btn-gold" href="mailto:mariomuvambo1@gmail.com?subject=Demonstra%C3%A7%C3%A3o%20da%20Par%C3%B3quia%20Digital">Escrever um email</a>
+        <a class="btn btn-ghost" href="https://www.linkedin.com/in/O-SEU-PERFIL" rel="noopener">Falar no LinkedIn</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Mário Muvambo. Todos os direitos reservados. As imagens mostram uma paróquia de demonstração, com dados fictícios.</span>
+    <a href="privacidade.html">Política de privacidade</a>
+  </div>
+</footer>
+
+</body>
+</html>
